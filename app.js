@@ -21,11 +21,35 @@ app.get('/', (_, response) => {
 
 // GET /api/todos
 
+app.get('/api/todos', (req, res) => {
+    res.json(todos);
+});
+
 // POST /api/todos
+
+app.post('/api/todos', (req, res) => {
+    const { task } = req.body;
+    if (task) {
+        const newTodo = { id: nextId++, task: task, complete: false };
+        todos.push(newTodo);
+        res.json({ id: newTodo.id });
+    } else {
+        res.status(400).send('Task is required');
+    }
+});
 
 // PUT /api/todos/:id
 
-
+app.put('/api/todos/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const todo = todos.find(t => t.id === id);
+    if (todo) {
+        todo.complete = !todo.complete;  
+        res.json(todo);
+    } else {
+        res.status(404).send('Task not found');
+    }
+});
 
 const message = `Server running: http://localhost:${port}`
 app.listen(port, () => console.log(message))
